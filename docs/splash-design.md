@@ -96,6 +96,30 @@ and keeps its one statement: **the N breaks out of the grid.**
   800), bundled from `@fontsource/ubuntu-sans`. No third-party request.
 - **Licence:** Ubuntu Font Licence 1.0 — free to use and embed on the web.
 
+## The words
+
+A splash carries three things: the name, one image, and the way in. This one
+adds a fourth without adding clutter, by letting the name do it.
+
+- **n stays; the suffix takes turns.** Every app in the suite is n + a word.
+  The splash shows `nfunc`, then swaps only the suffix — `ndisc`, `nplay`,
+  `ntree` … — and comes back to `nfunc`. The n never moves, so the naming rule
+  is visible without being explained.
+- **The line underneath follows the name.** Under `nfunc` it is the site's own
+  line; under an app it is that app's one-line role. That is the only extra
+  information on the page, and it answers "what is this?" better than a
+  slogan.
+- **One list.** Names and roles come from `src/lib/apps.ts`, the same list the
+  front page prints, so the two cannot disagree.
+- **Calm, like the blocks.** It starts only after the lead-in. `nfunc` holds
+  for seven seconds, each app for under three. A turn fades out quickly and in
+  slowly; nothing slides, and the link below never moves (the line keeps room
+  for two rows). App suffixes are a step dimmer than `func`, so nfunc reads as
+  home.
+- **It gets out of the way.** Resting the pointer on the words holds the
+  current turn. With reduced motion it stays `nfunc`. A screen reader always
+  hears "nfunc", whatever is showing.
+
 ## What we are deliberately not doing
 
 Anything that needs extra full-screen passes or extra downloads, because the
@@ -141,7 +165,8 @@ URL.
   paths in practice.
 - Discs, as a second primitive.
 - Whether the splash replaces `/` or stays a separate entry page.
-- The words: "Own your catalogue." is a placeholder.
+- The line under `nfunc` — "Own your catalogue." — is still a placeholder.
+- Whether a showing app's name should link to that app, once apps have pages.
 - Tuning: tempo, how often it glitches, how far the gaps travel, wash speed.
 - The rest of the site should use the same shapes and palette flat (SVG/CSS),
   so the 3D is a front-page feature and not a requirement for reading the site.
