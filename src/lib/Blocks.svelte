@@ -285,12 +285,10 @@
 				if (!w || !hgt) return;
 				renderer.setSize(w, hgt, false);
 				camera.aspect = w / hgt;
-				// Far enough back that the slab fits both ways. It is tilted back
-				// and has depth, so it needs more room top to bottom than side to
-				// side — a wide, short window is the tight case.
-				const slabHalf = (GRID.length * PITCH) / 2;
-				const tan = Math.tan((camera.fov * Math.PI) / 360);
-				const dist = Math.max((slabHalf + 1.7) / tan, (slabHalf + 0.9) / tan / camera.aspect);
+				// Far enough back that the slab fits the narrower side.
+				const half = (GRID.length * PITCH) / 2 + 0.9;
+				const fov = (camera.fov * Math.PI) / 180;
+				const dist = half / Math.tan(fov / 2) / Math.min(1, camera.aspect);
 				camera.position.set(0, 0, dist);
 				camera.updateProjectionMatrix();
 			};
