@@ -9,3 +9,5 @@ npm run dev      # http://localhost:5010
 npm run build    # → build/
 ./deploy.sh      # build + rsync to the server
 ```
+
+The plan for the site is in [docs/site-plan.md](docs/site-plan.md).
