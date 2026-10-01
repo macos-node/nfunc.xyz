@@ -7,7 +7,7 @@
 	<meta name="description" content="The n-suite: Nostr-native apps for music libraries, publishing, messaging and signing." />
 </svelte:head>
 
-<h1>nfunc</h1>
+<h1 class="wordmark">nfunc</h1>
 <p class="dim">The n-suite: Nostr-native apps for music libraries, publishing, messaging and signing.</p>
 
 <h2>Apps</h2>

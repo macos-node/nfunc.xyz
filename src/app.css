@@ -1,3 +1,7 @@
+/* Ubuntu Sans ExtraBold, for the nfunc wordmark only: one 16 KB file, served from this
+   site (no third-party font host). Ubuntu Font Licence 1.0. */
+@import '@fontsource/ubuntu-sans/latin-800.css';
+
 :root {
 	--bg: #0b0b0c;
 	--fg: #d8d8d8;
@@ -10,9 +14,17 @@
 html { background: var(--bg); color: var(--fg); font: 16px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
 body { margin: 0 auto; max-width: 72ch; padding: 12vh 16px 8vh; }
 h1 { font-size: 1.6rem; margin: 0 0 0.25rem; }
+/* The name, and only the name. Everything else stays monospace. */
+.wordmark { font-family: 'Ubuntu Sans', system-ui, sans-serif; font-weight: 800; line-height: 1.15; letter-spacing: -0.01em; }
 h2 { font-size: 1rem; color: var(--dim); font-weight: normal; margin: 3rem 0 0.75rem; }
 a { color: var(--accent); }
 .dim { color: var(--dim); }
 ul.apps { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
 ul.apps li { display: grid; grid-template-columns: 9ch 1fr; gap: 1ch; padding: 0.6rem 0; border-bottom: 1px solid var(--line); }
 ul.apps b { color: var(--accent); font-weight: normal; }
+
+/* Page-to-page cross-fade (see +layout.svelte). */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.6s; }
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
