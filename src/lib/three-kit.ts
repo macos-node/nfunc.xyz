@@ -15,7 +15,9 @@ export {
 	MeshBasicMaterial,
 	MeshStandardMaterial,
 	PerspectiveCamera,
+	Raycaster,
 	Scene,
+	Vector2,
 	WebGLRenderer
 } from 'three';
 export { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';

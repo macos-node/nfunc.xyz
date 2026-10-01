@@ -14,25 +14,49 @@
 	let shown = $state(0); // which turn is on the page
 	let swapping = $state(false); // mid-fade: the old text is on its way out
 
+	// The slab and the name are one control. The N has ten cubes and there are
+	// ten turns — home and nine apps — so each cube is a turn, in stroke order.
+	// The cube of the turn on the page is lit; pointing at a cube brings its
+	// turn to the page; a click or tap holds it there for a while. Clicking
+	// anywhere else on the slab moves on to the next.
+	let overSlab = false; // the pointer is on a cube
+	let overWords = false;
+	let heldUntil = 0; // after a click or tap: leave it be until then
+	let swap = 0;
+	const go = (to: number) => {
+		clearTimeout(swap);
+		if (to === shown) {
+			swapping = false;
+			return;
+		}
+		swapping = true;
+		swap = window.setTimeout(() => {
+			shown = to;
+			swapping = false;
+		}, 220);
+	};
+	const hover = (n: number) => {
+		overSlab = n >= 0;
+		if (n >= 0 && n < turns.length) go(n);
+	};
+	const select = (n: number) => {
+		heldUntil = performance.now() + 7000;
+		go(n >= 0 && n < turns.length ? n : (shown + 1) % turns.length);
+	};
+
 	onMount(() => {
 		// With reduced motion it simply stays nfunc.
 		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-		let holding = false;
 		let timer = 0;
-		let swap = 0;
-		const hold = () => (holding = true);
-		const release = () => (holding = false);
+		const hold = () => (overWords = true);
+		const release = () => (overWords = false);
 		const words = document.querySelector('.words');
 		words?.addEventListener('pointerenter', hold);
 		words?.addEventListener('pointerleave', release);
 
 		const step = () => {
-			if (!holding && !document.hidden) {
-				swapping = true;
-				swap = window.setTimeout(() => {
-					shown = (shown + 1) % turns.length;
-					swapping = false;
-				}, 320);
+			if (!overSlab && !overWords && !document.hidden && performance.now() > heldUntil) {
+				go((shown + 1) % turns.length);
 			}
 			// nfunc stays a good while; each app passes more briefly.
 			const next = (shown + 1) % turns.length;
@@ -59,7 +83,7 @@
 	     under a transparent canvas, so it costs nothing to draw and sits behind
 	     the still fallback too. -->
 	<div class="backdrop" aria-hidden="true"></div>
-	<div class="stage"><Blocks /></div>
+	<div class="stage"><Blocks active={shown} onhover={hover} onselect={select} /></div>
 	<div class="words">
 		<!-- Read aloud as the name, whatever the suffix is showing. -->
 		<h1 class="wordmark" aria-label="nfunc">

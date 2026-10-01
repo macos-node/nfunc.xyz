@@ -21,7 +21,22 @@
 	import { onMount } from 'svelte';
 	import { CORAL, EMERALD, GRID, N_GREY, N_STROKE, PITCH, RADIUS } from '$lib/avatar-grid';
 
-	let { poster = '/splash-still.webp' }: { poster?: string } = $props();
+	// The N's ten cubes can stand for ten things — the page decides what. They
+	// are numbered along the stroke (0 = the foot of the left stem).
+	//   active    which one is current: it lights, a little
+	//   onhover   the pointer is over cube n (or -1: over none)
+	//   onselect  cube n was clicked or tapped (-1: a gap, or empty space)
+	let {
+		poster = '/splash-still.webp',
+		active = -1,
+		onhover,
+		onselect
+	}: {
+		poster?: string;
+		active?: number;
+		onhover?: (n: number) => void;
+		onselect?: (n: number) => void;
+	} = $props();
 
 	let host: HTMLDivElement;
 	let canvas: HTMLCanvasElement;
@@ -135,6 +150,7 @@
 				line: InstanceType<typeof THREE.LineSegments>;
 				lineMat: InstanceType<typeof THREE.LineBasicMaterial>;
 				level: number;
+				lit: number; // 0 → 1: picked out, by the page or the pointer
 				f1: number;
 				phase: number;
 				glitch: 'flip' | 'colour' | null;
@@ -158,6 +174,7 @@
 						line,
 						lineMat,
 						level: 0,
+						lit: 0,
 						f1: 0.7 + Math.random() * 1.1,
 						phase: Math.random() * Math.PI * 2,
 						glitch: null,
@@ -216,6 +233,19 @@
 			slab.add(new THREE.LineSegments(spaceGeo, spaceMat));
 			const SPACE_REST = 0.3; // how visible at rest
 			let turning = 0; // 0 at rest → 1 while it is being turned
+
+			// Which cube is under the pointer: a ray from the camera through it.
+			const ray = new THREE.Raycaster();
+			const ndc = new THREE.Vector2();
+			const strokeAt = (clientX: number, clientY: number) => {
+				const box = canvas.getBoundingClientRect();
+				ndc.set(((clientX - box.left) / box.width) * 2 - 1, -((clientY - box.top) / box.height) * 2 + 1);
+				ray.setFromCamera(ndc, camera);
+				const hit = ray.intersectObject(mesh)[0];
+				return hit?.instanceId === undefined ? -1 : cubes[hit.instanceId].stroke;
+			};
+			let hover = -1;
+			const white = new THREE.Color(0xffffff);
 
 			const m = new THREE.Matrix4();
 			const tint = new THREE.Color();
@@ -311,8 +341,18 @@
 						target = shown * (0.7 + 0.3 * Math.sin(ts * cube.f1 * 0.4 + cube.phase));
 						const wash = Math.max(0, 1 - Math.abs(cube.stroke - washAt) / 1.6);
 						base.set(N_GREY).lerp(cube.colour, cube.rest ? bloom : wash * wash);
+						// Picked out — fully under the pointer, partly when it is simply
+						// the current one: it takes its colour, goes solid and steps
+						// forward. The step is what shows on the two diagonal cubes,
+						// which are coloured already.
+						const want = cube.stroke === hover ? 1 : cube.stroke === active ? 0.6 : 0;
+						cube.lit += (want * shown - cube.lit) * Math.min(1, ease * 2.5);
+						target = Math.max(target, cube.lit);
+						base.lerp(cube.colour, cube.lit).lerp(white, cube.lit * (cube.rest ? 0.22 : 0.08));
 					} else {
-						target = clamp01(meter(ts, cube.col) * 4.4 - cube.up - 0.6) * 0.5 * meters;
+						// The gaps stay part of the grid but well back: fainter fill and
+						// fainter outlines than the N, so what can be touched is clear.
+						target = clamp01(meter(ts, cube.col) * 4.4 - cube.up - 0.6) * 0.32 * meters;
 						base.copy(gapFill);
 					}
 					cube.level += (target - cube.level) * ease;
@@ -324,8 +364,9 @@
 					}
 					// Fading in is the page colour turning into the cube's colour.
 					tint.copy(page).lerp(base, fill);
-					const z = cube.isN ? 0 : GAP_REST + cube.level * 0.5;
-					put(i, cube, z, false, true, (0.42 + 0.3 * fill) * lines);
+					const z = cube.isN ? cube.lit * 0.22 : GAP_REST + cube.level * 0.5;
+					const edge = cube.isN ? 0.42 + 0.3 * fill + 0.28 * cube.lit : 0.26 + 0.2 * fill;
+					put(i, cube, z, false, true, edge * lines);
 				});
 			};
 
@@ -365,7 +406,7 @@
 			// Drag to turn it — all the way round, sideways. Released, it coasts,
 			// holds a moment, then eases back to the resting pose (the nearest
 			// full turn of it, so it never unwinds).
-			const spin = { dragging: false, px: 0, py: 0, vx: 0, vy: 0, until: 0 };
+			const spin = { dragging: false, px: 0, py: 0, sx: 0, sy: 0, vx: 0, vy: 0, until: 0 };
 			const TILT = 1.1; // how far it may tip up or down
 			const onPointer = (e: PointerEvent) => {
 				if (spin.dragging) {
@@ -379,17 +420,30 @@
 				}
 				aim.y = rest.y + (e.clientX / window.innerWidth - 0.5) * 0.3;
 				aim.x = rest.x + (e.clientY / window.innerHeight - 0.5) * 0.2;
+				// Only a mouse hovers; a finger's first contact is the tap itself.
+				const over = e.pointerType === 'mouse' && host.contains(e.target as Node) ? strokeAt(e.clientX, e.clientY) : -1;
+				if (over !== hover) {
+					hover = over;
+					host.style.cursor = over >= 0 ? 'pointer' : '';
+					onhover?.(over);
+				}
 			};
 			const onDown = (e: PointerEvent) => {
 				spin.dragging = true;
-				spin.px = e.clientX;
-				spin.py = e.clientY;
+				spin.px = spin.sx = e.clientX;
+				spin.py = spin.sy = e.clientY;
 				spin.vx = spin.vy = 0;
 				host.setPointerCapture(e.pointerId);
 			};
-			const onUp = () => {
+			const onUp = (e: PointerEvent) => {
 				if (!spin.dragging) return;
 				spin.dragging = false;
+				// Hardly moved: a click or a tap, not a turn.
+				if (e.type === 'pointerup' && Math.hypot(e.clientX - spin.sx, e.clientY - spin.sy) < 6) {
+					spin.vx = spin.vy = 0;
+					onselect?.(strokeAt(e.clientX, e.clientY));
+					return;
+				}
 				// A hard flick shouldn't send it spinning for seconds.
 				const cap = (v: number) => Math.max(-0.2, Math.min(0.2, v));
 				spin.vx = cap(spin.vx);

@@ -161,6 +161,74 @@ its lines fight the cubes' outlines.
 If the colour fields stay, they are the obvious background for the rest of the
 site.
 
+## Interaction
+
+> Prototype on `splash-background`, 2026-10-02.
+
+The slab and the name are one control. This is the interplay between type and
+logo that the layout alone could not give.
+
+- **One cube, one turn.** The N has ten cubes; the name has ten turns — home
+  and the nine apps. Each cube is a turn, numbered along the stroke: the foot
+  of the left stem is `nfunc`, then `ndisc` up the stem, across the diagonal,
+  and up the right stem to `nbridge`. The six gap cubes are not anything.
+- **The current cube is lit.** As the name takes its turns, the matching cube
+  takes its colour, goes solid and steps forward a little. So the link is
+  visible before anyone touches anything.
+- **Pointing selects.** With a mouse, the cube under the pointer lights fully
+  and the name switches to its turn; the cycling waits while the pointer is on
+  a cube. The cursor becomes a hand there, and stays a grab hand elsewhere.
+- **A click or tap holds.** It brings that turn to the page and keeps it for
+  seven seconds. On a touch screen this is the whole interaction. A click on
+  a gap cube or on empty space moves on to the next turn, so no tap is wasted.
+- **A click is not a drag.** Under six pixels of movement it is a click;
+  more, and it turns the slab as before.
+- **The gaps step back.** Their fill is fainter and their outlines dimmer than
+  before, so what can be touched is clear — but only somewhat; they are still
+  part of the grid.
+- **How:** three.js casts a ray from the pointer and reports the cube it hits
+  (`Raycaster`, a few KB more). `Blocks.svelte` knows nothing about apps: it
+  takes `active` and reports `onhover(n)` / `onselect(n)`; the page maps `n`
+  to a turn.
+
+Limits, by design or for now:
+
+- **It is not the navigation.** Cubes on a canvas cannot be reached by
+  keyboard or read by a screen reader, and nothing says they can be clicked.
+  The type and the `enter` link stay the real way in.
+- **Nowhere to go yet.** There is no page per app, so a click selects and
+  shows; it does not open anything. When app pages exist the click becomes a
+  link.
+- **To judge:** the colour wash along the N can look like a selection while
+  it passes. If that confuses, the wash should skip while a cube is held, or
+  go.
+
+### To do
+
+**When app pages exist** — every app needs an ordinary text link as well as
+its cube. The cubes are missing for anyone on the still image (no 3D, or
+reduced motion), for keyboard and screen-reader users, and for search engines.
+
+- Make the name the link: whichever app the wordmark is showing, the name and
+  its line open that app's page. Point at a cube, click the name.
+- Make the front page's app list links. `enter` already leads there, so that
+  alone covers every visitor.
+- Then make a click on a cube navigate, not just select.
+
+**Before it goes live** — test with real hands on real devices. The dev server
+can be opened to the local network (`npm run dev -- --host`) so a phone on the
+same Wi-Fi loads it from the dev machine; Mullvad needs local network sharing
+on for that.
+
+- Tap versus drag: the six-pixel threshold was chosen for a mouse. Fingers
+  wobble more; touch probably wants a larger one.
+- Press and hold: phones may answer with a selection or context menu.
+- Tap a cube, then tap elsewhere: do the seven-second hold and "next" feel
+  right without hover?
+- Dragging near the type, now that the canvas extends under it.
+- An older phone, for speed — the constraint this was built to.
+- Firefox, Safari, and the wide side-by-side layout.
+
 ## Type
 
 - **The name is set in Ubuntu Sans ExtraBold; everything else stays
