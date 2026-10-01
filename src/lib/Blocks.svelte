@@ -19,7 +19,7 @@
 	// the context is lost — the still image stays. With reduced motion, one
 	// still frame.
 	import { onMount } from 'svelte';
-	import { GRID, N_GREY, N_STROKE, PITCH, RADIUS } from '$lib/avatar-grid';
+	import { CORAL, EMERALD, GRID, N_GREY, N_STROKE, PITCH, RADIUS } from '$lib/avatar-grid';
 
 	let { poster = '/splash-still.webp' }: { poster?: string } = $props();
 
@@ -31,6 +31,7 @@
 	// appears only if the 3D can't run, or is taking too long to arrive.
 	let fallback = $state(false);
 
+	const BLEED = 0.2; // how far the canvas extends past its box, each side; matches the styles
 	const GAP_REST = -0.45; // how far the gaps sit back when nothing moves
 
 	onMount(() => {
@@ -165,6 +166,57 @@
 				})
 			);
 
+			// Hints of the space the slab sits in, the way a modelling viewport
+			// shows them: three axes through its centre — which never moves — and
+			// a ground grid under it, on the cubes' own pitch. They belong to the
+			// slab, so they turn with it. Each line fades out with distance from
+			// the centre (alpha per vertex), and the whole set fades in with the
+			// lead-in and firms up while the slab is being turned.
+			const REACH = 5.2;
+			const FLOOR = -(2 * PITCH + 0.3);
+			const sp: number[] = [];
+			const sa: number[] = [];
+			const hint = (
+				a: [number, number, number],
+				b: [number, number, number],
+				colour: InstanceType<typeof THREE.Color>,
+				weight: number,
+				planar: boolean // measure the fade along the ground, not from the centre
+			) => {
+				const steps = 14;
+				const at = (i: number) => a.map((v, n) => v + ((b[n] - v) * i) / steps);
+				const alpha = ([x, y, z]: number[]) =>
+					weight * Math.max(0, 1 - Math.hypot(x, planar ? 0 : y, z) / REACH) ** 1.6;
+				for (let i = 0; i < steps; i++) {
+					const p = at(i);
+					const q = at(i + 1);
+					sp.push(...p, ...q);
+					sa.push(colour.r, colour.g, colour.b, alpha(p), colour.r, colour.g, colour.b, alpha(q));
+				}
+			};
+			const axisGrey = new THREE.Color(0xb8b8c0);
+			// X in coral, the depth axis in emerald — a viewport's red and green,
+			// in this site's two colours. Up is grey.
+			hint([-REACH, 0, 0], [REACH, 0, 0], new THREE.Color(CORAL), 1, false);
+			hint([0, 0, -REACH], [0, 0, REACH], new THREE.Color(EMERALD), 1, false);
+			hint([0, -REACH, 0], [0, REACH, 0], axisGrey, 0.8, false);
+			for (let i = -3; i <= 3; i++) {
+				hint([i * PITCH, FLOOR, -REACH], [i * PITCH, FLOOR, REACH], axisGrey, 0.5, true);
+				hint([-REACH, FLOOR, i * PITCH], [REACH, FLOOR, i * PITCH], axisGrey, 0.5, true);
+			}
+			const spaceGeo = new THREE.BufferGeometry();
+			spaceGeo.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
+			spaceGeo.setAttribute('color', new THREE.Float32BufferAttribute(sa, 4));
+			const spaceMat = new THREE.LineBasicMaterial({
+				vertexColors: true,
+				transparent: true,
+				opacity: 0,
+				depthWrite: false
+			});
+			slab.add(new THREE.LineSegments(spaceGeo, spaceMat));
+			const SPACE_REST = 0.3; // how visible at rest
+			let turning = 0; // 0 at rest → 1 while it is being turned
+
 			const m = new THREE.Matrix4();
 			const tint = new THREE.Color();
 			const base = new THREE.Color();
@@ -187,6 +239,7 @@
 			// reads without any motion. Also the reduced-motion view and the
 			// frame the poster image was captured from.
 			const drawStill = () => {
+				spaceMat.opacity = SPACE_REST;
 				cubes.forEach((cube, i) => {
 					if (cube.isN) tint.set(cube.rest ? cube.colour : N_GREY);
 					put(i, cube, cube.isN ? 0 : GAP_REST, !cube.isN, true, cube.isN ? 0.72 : 0.42);
@@ -229,6 +282,11 @@
 				const lines = 0.25 + 0.75 * clamp01(age / 2);
 				const bloom = clamp01((age - 6) / 2.5);
 				const meters = clamp01((age - 5) / 3);
+				// The space arrives after the outlines and before the N fills; it
+				// is faint at rest and firms up while the slab is being turned.
+				const moving = spin.dragging || Math.abs(spin.vx) + Math.abs(spin.vy) > 0.0005 || t < spin.until;
+				turning += ((moving ? 1 : 0) - turning) * ease;
+				spaceMat.opacity = clamp01((age - 2.5) / 3) * (SPACE_REST + (0.85 - SPACE_REST) * turning);
 				// The wash walks the N, then waits a while — not on a fixed clock.
 				let washAt = (ts - washFrom) * 3.2 - 2;
 				if (washAt > N_STROKE.length + 2) {
@@ -279,14 +337,18 @@
 				fallback = false;
 			};
 
-			const fit = () => {
-				const w = host.clientWidth;
-				const hgt = host.clientHeight;
+			// The canvas is larger than its box by BLEED on every side (see the
+			// styles): the extra is where the space lines fade away, so they end
+			// softly instead of at a hard rectangle. The slab is framed to the
+			// box, not the canvas, so it keeps its size.
+			const fit = (bleed = BLEED) => {
+				const w = host.clientWidth * (1 + 2 * bleed);
+				const hgt = host.clientHeight * (1 + 2 * bleed);
 				if (!w || !hgt) return;
 				renderer.setSize(w, hgt, false);
 				camera.aspect = w / hgt;
 				// Far enough back that the slab fits the narrower side.
-				const half = (GRID.length * PITCH) / 2 + 0.9;
+				const half = ((GRID.length * PITCH) / 2 + 0.9) * (1 + 2 * bleed);
 				const fov = (camera.fov * Math.PI) / 180;
 				const dist = half / Math.tan(fov / 2) / Math.min(1, camera.aspect);
 				camera.position.set(0, 0, dist);
@@ -403,7 +465,7 @@
 					renderer.setPixelRatio(1);
 					renderer.setSize(size, size, false);
 					camera.aspect = 1;
-					fit();
+					fit(0);
 					renderer.setSize(size, size, false);
 					camera.aspect = 1;
 					camera.updateProjectionMatrix();
@@ -430,6 +492,8 @@
 				box.dispose();
 				outline.dispose();
 				material.dispose();
+				spaceGeo.dispose();
+				spaceMat.dispose();
 				for (const cube of cubes) cube.lineMat.dispose();
 				renderer.dispose();
 			};
@@ -457,6 +521,21 @@
 	/* Both start invisible and fade in, so nothing arrives with a cut. */
 	canvas, img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 1.4s ease; }
 	img { object-fit: contain; }
+	/* The canvas bleeds 20% past the box on every side and fades to nothing
+	   across that margin, so the space lines end softly and can reach under
+	   whatever sits beside the slab. The box, not the canvas, takes the drag. */
+	canvas {
+		inset: -20%;
+		width: 140%;
+		height: 140%;
+		pointer-events: none;
+		-webkit-mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent),
+			linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent);
+		-webkit-mask-composite: source-in;
+		mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent),
+			linear-gradient(to bottom, transparent, #000 16%, #000 84%, transparent);
+		mask-composite: intersect;
+	}
 	.show { opacity: 1; }
 	@media (prefers-reduced-motion: reduce) {
 		canvas, img { transition: none; }

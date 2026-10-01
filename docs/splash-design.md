@@ -87,6 +87,80 @@ and keeps its one statement: **the N breaks out of the grid.**
   From behind the N reads mirrored and the gap cubes are in front — a
   different picture of the same thing, which is fine.
 
+## Background
+
+> On the `splash-background` branch, 2026-10-02. Not merged.
+
+Something faint behind the slab, abstract and nothing more concrete than that.
+
+- **Kept — one field of colour from each family.** Emerald low on the left,
+  coral high on the right, the same sides as in the slab, each a soft glow at
+  a little over 10%. Subtle; it stays.
+- **How:** two CSS gradients in `src/routes/splash/+page.svelte`, under the
+  canvas, which is transparent. Nothing is added to the 3D scene, so it costs
+  nothing to draw, and it sits behind the still fallback as well. It fades in
+  during the lead-in — after the outlines, before the N fills — and reduced
+  motion shows it at once. It must stay quieter than everything in front of
+  it.
+- **Tried and dropped — the grid, continued.** The avatar's rounded square as
+  an outline, tiled across the page at about 7% and fading away from the
+  slab, so the sixteen cubes would read as the lit part of something larger.
+  It was built and looked at; it did not earn its place. Lines behind the
+  slab compete with the cubes' own outlines.
+
+- **Prototype — hints of the space, as a modelling viewport shows them.**
+  The flat grid was the right direction for one reason: it bridged the 3D
+  shape and the type. A viewport does that honestly — the lines are *in* the
+  space. So: three axes through the slab's centre (which never moves) and a
+  ground grid under it on the cubes' own pitch, all inside the 3D scene, so
+  they turn with the slab. The cross axis is coral and the depth axis emerald
+  — a viewport's red and green, in this site's two colours; up is grey.
+  Every line fades out with distance from the centre, so nothing reaches the
+  edge of the canvas. The set fades in with the model during the lead-in,
+  rests at about 30%, and firms up while the slab is being turned, relaxing
+  again when it settles. One extra draw call; no post-processing.
+
+  **It stays** (2026-10-02: "better than what I had in mind").
+- **Soft edges.** The canvas now bleeds 20% past its box on every side and
+  fades to nothing across that margin (a CSS mask), and the lines reach a
+  little further. So the space ends softly instead of at the hard rectangle
+  of the canvas, and its lines can run under whatever sits beside the slab.
+  The slab is framed to the box, not the canvas, so its size is unchanged.
+  Costs about twice the canvas pixels, most of them empty.
+- **A hint of colour in the type.** The wordmark's `n` — the letter that never
+  changes — carries the slab's diagonal in miniature: one unbroken blend
+  from emerald at its top left to coral at its bottom right, only slightly
+  softened toward the type's grey. It began as a faint tint at the two
+  corners; it was made a solid blend so the `n` stands apart from whichever
+  suffix is beside it. Ties type and logo together without adding anything.
+- **Considered, not built — camera framing.** Corner brackets and a cross
+  hair, as through an SLR viewfinder, to frame the slab. The axes already
+  give a cross through the centre; brackets on top would start a second,
+  photographic metaphor next to the modelling one. Parked unless the soft
+  edges and the coloured `n` turn out not to be enough.
+- **The hard problem is the interplay of type and logo across screen sizes.**
+  Side by side on a wide screen, stacked on a narrow one; anything that links
+  them has to survive both.
+
+Kept as notions, not built:
+
+- **Level lines.** Faint horizontal rules or thin columns continuing from the
+  two meter columns, like the graticule of a spectrum display. Leans hardest
+  on the music reading. Liked.
+- **A receding floor.** Perspective lines running to a horizon under the slab.
+  Liked as a notion; a familiar retro look, so it would need care not to fight
+  the clean geometry.
+- **An echo of the slab.** A much larger, dim copy of the outlines far behind
+  the real ones, inside the 3D scene, so it turns with a drag and gives real
+  parallax. A nice idea, unsure how it would look; the only one of these that
+  adds drawing work.
+
+Given why the grid was dropped, any of these should be judged first on whether
+its lines fight the cubes' outlines.
+
+If the colour fields stay, they are the obvious background for the rest of the
+site.
+
 ## Type
 
 - **The name is set in Ubuntu Sans ExtraBold; everything else stays
