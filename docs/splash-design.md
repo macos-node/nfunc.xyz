@@ -312,3 +312,39 @@ URL.
 - Tuning: tempo, how often it glitches, how far the gaps travel, wash speed.
 - The rest of the site should use the same shapes and palette flat (SVG/CSS),
   so the 3D is a front-page feature and not a requirement for reading the site.
+
+## One slab for the whole site
+
+> Prototype on `app-pages`, 2026-10-02. Not merged, not deployed.
+
+The splash is the front page (`/`); the list of apps moved to `/apps`, and
+`/splash` redirects. Going back to the front page from inside the site used to
+replay the entrance, though the visitor was already in. So the slab no longer
+belongs to a page:
+
+- **It lives in the layout**, made once, and stays while pages change — one
+  WebGL scene, no reload. Large on the front page; 72px in the header of every
+  other page (56px on a narrow screen).
+- **The browser moves it** between the two sizes (a named view transition),
+  while the rest of the page cross-fades. Without that API it simply changes.
+- **The lead-in plays once**, on a first arrival at the front page. A visitor
+  who lands on an app's page gets the slab already formed.
+- **Compact** (`Blocks`' new prop): it cannot be turned, the space lines are
+  hidden, nothing flickers, and it does not stop a scroll.
+- **Clicks.** Front page, mouse: the cube under the pointer is showing, so a
+  click opens its page. Front page, touch: the first tap shows, the second
+  opens. Small slab, mouse: a cube with a page opens it; home's cube, a gap or
+  the space around leads home; a cube without a page does nothing, and the
+  header says "to come". Small slab, touch: the whole slab leads home — the
+  cubes are too small for a finger.
+- **The plain way round** is the footer, on every page: each app by name, as a
+  link once it has a page, and GitHub. The header carries `nfunc / apps`.
+- **Cost:** the 3D code (~132 KB compressed) now loads on whichever page a
+  visitor lands on, not only the front. It stops drawing off screen, so on a
+  long page it idles once scrolled past.
+
+Only ndisc has a page so far (`/ndisc`), built from its README in three levels:
+reader, "The stack", "How Nostr does it". Its copy is a first draft.
+
+To judge by watching: the move between sizes; the footer along the bottom of
+the front page; whether the small slab earns its place in the header.

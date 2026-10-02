@@ -26,14 +26,19 @@
 	//   active    which one is current: it lights, a little
 	//   onhover   the pointer is over cube n (or -1: over none)
 	//   onselect  cube n was clicked or tapped (-1: a gap, or empty space)
+	//   compact   small, in a page header: it cannot be turned, the space
+	//             around it is hidden and nothing flickers. If it starts out
+	//             compact the lead-in is skipped — that belongs to the front page.
 	let {
 		poster = '/splash-still.webp',
 		active = -1,
+		compact = false,
 		onhover,
 		onselect
 	}: {
 		poster?: string;
 		active?: number;
+		compact?: boolean;
 		onhover?: (n: number) => void;
 		onselect?: (n: number) => void;
 	} = $props();
@@ -233,6 +238,7 @@
 			slab.add(new THREE.LineSegments(spaceGeo, spaceMat));
 			const SPACE_REST = 0.3; // how visible at rest
 			let turning = 0; // 0 at rest → 1 while it is being turned
+			let roomy = compact ? 0 : 1; // 1 large, with its space showing → 0 compact
 
 			// Which cube is under the pointer: a ray from the camera through it.
 			const ray = new THREE.Raycaster();
@@ -296,7 +302,10 @@
 			const drawLive = (t: number) => {
 				const ts = t / 1000;
 				if (born < 0) {
-					born = prev = ts;
+					prev = ts;
+					born = compact ? ts - 30 : ts;
+					// Starting compact, the N is simply there: no filling in.
+					if (compact) for (const cube of cubes) if (cube.isN) cube.level = 0.85;
 					// Nothing erratic and no wash until the picture has formed.
 					nextGlitch = t + 9000;
 					washFrom = ts + 11;
@@ -316,7 +325,8 @@
 				// is faint at rest and firms up while the slab is being turned.
 				const moving = spin.dragging || Math.abs(spin.vx) + Math.abs(spin.vy) > 0.0005 || t < spin.until;
 				turning += ((moving ? 1 : 0) - turning) * ease;
-				spaceMat.opacity = clamp01((age - 2.5) / 3) * (SPACE_REST + (0.85 - SPACE_REST) * turning);
+				roomy += ((compact ? 0 : 1) - roomy) * ease;
+				spaceMat.opacity = clamp01((age - 2.5) / 3) * (SPACE_REST + (0.85 - SPACE_REST) * turning) * roomy;
 				// The wash walks the N, then waits a while — not on a fixed clock.
 				let washAt = (ts - washFrom) * 3.2 - 2;
 				if (washAt > N_STROKE.length + 2) {
@@ -324,7 +334,7 @@
 					washAt = -9;
 				}
 
-				if (t > nextGlitch) {
+				if (!compact && t > nextGlitch) {
 					const cube = cubes[Math.floor(Math.random() * cubes.length)];
 					cube.glitch = !cube.isN && Math.random() < 0.55 ? 'flip' : 'colour';
 					cube.glitchEnd = t + 70 + Math.random() * 170;
@@ -406,7 +416,7 @@
 			// Drag to turn it — all the way round, sideways. Released, it coasts,
 			// holds a moment, then eases back to the resting pose (the nearest
 			// full turn of it, so it never unwinds).
-			const spin = { dragging: false, px: 0, py: 0, sx: 0, sy: 0, vx: 0, vy: 0, until: 0 };
+			const spin = { down: false, dragging: false, px: 0, py: 0, sx: 0, sy: 0, vx: 0, vy: 0, until: 0 };
 			const TILT = 1.1; // how far it may tip up or down
 			const onPointer = (e: PointerEvent) => {
 				if (spin.dragging) {
@@ -429,21 +439,24 @@
 				}
 			};
 			const onDown = (e: PointerEvent) => {
-				spin.dragging = true;
+				spin.down = true;
+				spin.dragging = !compact; // compact: a press is only ever a click
 				spin.px = spin.sx = e.clientX;
 				spin.py = spin.sy = e.clientY;
 				spin.vx = spin.vy = 0;
 				host.setPointerCapture(e.pointerId);
 			};
 			const onUp = (e: PointerEvent) => {
-				if (!spin.dragging) return;
-				spin.dragging = false;
+				if (!spin.down) return;
+				const turned = spin.dragging;
+				spin.down = spin.dragging = false;
 				// Hardly moved: a click or a tap, not a turn.
 				if (e.type === 'pointerup' && Math.hypot(e.clientX - spin.sx, e.clientY - spin.sy) < 6) {
 					spin.vx = spin.vy = 0;
 					onselect?.(strokeAt(e.clientX, e.clientY));
 					return;
 				}
+				if (!turned) return;
 				// A hard flick shouldn't send it spinning for seconds.
 				const cap = (v: number) => Math.max(-0.2, Math.min(0.2, v));
 				spin.vx = cap(spin.vx);
@@ -561,7 +574,7 @@
 	});
 </script>
 
-<div class="blocks" bind:this={host}>
+<div class="blocks" class:compact bind:this={host}>
 	<img class:show={fallback} src={poster} alt="nfunc" draggable="false" />
 	<canvas class:show={live} bind:this={canvas} aria-hidden="true"></canvas>
 	<noscript><style>.blocks img { opacity: 1 !important; }</style></noscript>
@@ -572,6 +585,8 @@
 	/* Dragging turns the cubes, so the browser must not scroll or select. */
 	.blocks:global(.turnable) { cursor: grab; touch-action: none; user-select: none; }
 	.blocks:global(.turnable:active) { cursor: grabbing; }
+	/* Compact: it is a link, not something to turn, and must not stop a scroll. */
+	.blocks.compact:global(.turnable), .blocks.compact:global(.turnable:active) { cursor: pointer; touch-action: auto; }
 	/* Both start invisible and fade in, so nothing arrives with a cut. */
 	canvas, img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 1.4s ease; }
 	img { object-fit: contain; }
