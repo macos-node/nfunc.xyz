@@ -3,8 +3,8 @@
 export const apps: { name: string; role: string; page?: boolean }[] = [
 	{ name: 'ndisc', role: 'Discography catalogue and publisher — the hub', page: true },
 	{ name: 'nplay', role: 'Music and video player' },
-	{ name: 'ntree', role: 'FLAC quality scanner, sampler and library mirror' },
-	{ name: 'nsmpl', role: 'Two-track sample tool and publisher' },
+	{ name: 'ntree', role: 'FLAC quality scanner, sampler and library mirror', page: true },
+	{ name: 'nsmpl', role: 'Two-track sample tool and publisher', page: true },
 	{ name: 'nview', role: 'Mobile viewer: read and react' },
 	{ name: 'nping', role: 'Nostr relay connectivity tester' },
 	{ name: 'nchat', role: 'Private direct messages' },

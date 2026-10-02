@@ -121,16 +121,6 @@
 	.words { animation: arrive 1.6s ease 1.2s both; }
 	@keyframes arrive { from { opacity: 0; } }
 	h1 { font-size: clamp(2.4rem, 7vw, 5.2rem); letter-spacing: -0.02em; white-space: nowrap; }
-	/* The n never changes, so it carries the colour: the slab's diagonal in
-	   miniature, one unbroken blend from emerald at the top left to coral at
-	   the bottom right, softened a little toward the type's grey. Solid
-	   enough to set the n apart from whichever suffix is beside it. */
-	.n {
-		background: linear-gradient(135deg, color-mix(in srgb, #34d399 80%, var(--fg)) 20%, color-mix(in srgb, #ff7849 80%, var(--fg)) 80%);
-		-webkit-background-clip: text;
-		background-clip: text;
-		color: transparent;
-	}
 	/* A turn fades out quickly and in slowly; nothing slides or jumps. */
 	.turn { transition: opacity 0.7s ease, color 0.7s ease; }
 	.turn.out { opacity: 0; transition-duration: 0.3s; }
