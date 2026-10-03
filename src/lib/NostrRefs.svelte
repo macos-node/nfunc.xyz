@@ -9,12 +9,14 @@
 	const list = $derived(nips.map((nip) => (typeof nip === 'string' ? { n: nip } : nip)));
 </script>
 
-<h3>Event kinds</h3>
-<ul class="defs">
-	{#each kinds as k}
-		<li><Kinds list={[k]} /> <span>{kindRefs[k].what}</span></li>
-	{/each}
-</ul>
+{#if kinds.length}
+	<h3>Event kinds</h3>
+	<ul class="defs">
+		{#each kinds as k}
+			<li><Kinds list={[k]} /> <span>{kindRefs[k].what}</span></li>
+		{/each}
+	</ul>
+{/if}
 
 <h3>NIPs in play</h3>
 <ul class="defs">
