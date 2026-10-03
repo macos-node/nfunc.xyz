@@ -5,7 +5,7 @@
 	import Kinds from '$lib/Kinds.svelte';
 	import NostrRefs from '$lib/NostrRefs.svelte';
 
-	const version = '0.2.0-beta.5';
+	const version = '0.2.0';
 	const repo = 'https://github.com/macos-node/radio-scan';
 </script>
 
@@ -17,7 +17,7 @@
 >
 	<h2>What it is</h2>
 	<p>
-		A desktop app for Apple and Linux, and a beta. Add a station by its stream address, or a podcast by
+		A desktop app for Apple and Linux. Add a station by its stream address, or a podcast by
 		its feed, and play it. The lists live on your machine and need no key; sign in, and what you follow can
 		also be published, so another of your machines — or another person — can pick it up.
 	</p>
@@ -49,7 +49,7 @@
 	<dl class="features">
 		<div>
 			<dt>Stations <Kinds list={[31241]} /></dt>
-			<dd>A list of streams, started off with a handful from SomaFM that you can remove. Add your own, play, stop, set the volume. What a stream says about itself — name, genre, bitrate, home page — is kept.</dd>
+			<dd>A list of streams, started off with a handful from SomaFM that you can remove. Add your own, play, stop, set the volume. What a stream says about itself — name, genre, bitrate, home page — is kept on disk.</dd>
 		</div>
 		<div>
 			<dt>Podcasts <Kinds list={[31242]} /></dt>
@@ -58,7 +58,7 @@
 				skip back and forward through an episode.
 				<details>
 					<summary>more</summary>
-					<p>A feed’s own account of the show — author, categories, language, support links — is stored, and you can fill in what a feed leaves out. “Refresh feeds” reads every feed again.</p>
+					<p>A feed’s own account of the show — author, categories, language, support links — is stored, with each feed’s episode list, so the tab opens on what it last knew even with no network. You can fill in what a feed leaves out; where the feed does state something, the feed’s word is shown and yours is kept. “Refresh feeds” reads every feed again.</p>
 				</details>
 			</dd>
 		</div>
@@ -83,7 +83,7 @@
 		</div>
 		<div>
 			<dt>Backup</dt>
-			<dd>Export your stations and shows to a file, exactly as they are stored, and bring them back.</dd>
+			<dd>Export your stations and shows to a file, exactly as they are stored, and bring them back. An import never replaces newer details with older ones, and the wrong kind of file is refused.</dd>
 		</div>
 		<div>
 			<dt>Themes</dt>
