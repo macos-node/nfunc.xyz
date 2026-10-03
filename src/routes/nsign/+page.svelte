@@ -30,8 +30,8 @@
 			<dd>Designed to run all the time on a low-powered device of its own.</dd>
 		</div>
 		<div>
-			<dt>Minimum</dt>
-			<dd>A Raspberry Pi 4 or something like it, with a minimal headless system on its SD card.</dd>
+			<dt>Hardware</dt>
+			<dd>A Raspberry Pi 5 — what it is built and tested on — with a minimal headless system on its SD card.</dd>
 		</div>
 		<div>
 			<dt>Nothing comes in</dt>
