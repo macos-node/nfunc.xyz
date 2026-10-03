@@ -171,7 +171,7 @@ logo that the layout alone could not give.
 - **One cube, one turn.** The N has ten cubes; the name has ten turns — home
   and the nine apps. Each cube is a turn, numbered along the stroke: the foot
   of the left stem is `nfunc`, then `ndisc` up the stem, across the diagonal,
-  and up the right stem to `nbridge`. The six gap cubes are not anything.
+  and up the right stem to `nsign`, in the order of `src/lib/apps.ts`. The six gap cubes are not anything.
 - **The current cube is lit.** As the name takes its turns, the matching cube
   takes its colour, goes solid and steps forward a little. So the link is
   visible before anyone touches anything.
