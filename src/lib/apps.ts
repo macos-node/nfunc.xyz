@@ -10,12 +10,15 @@ export const apps: { name: string; role: string; page?: boolean }[] = [
 	{ name: 'nplay', role: 'Music and video player', page: true },
 	{ name: 'nchat', role: 'Private direct messages', page: true },
 	{ name: 'nbridge', role: 'Relay viewer and the signer’s monitor', page: true },
-	{ name: 'nsign', role: 'Remote signer: holds the key, answers NIP-46', page: true }
+	{ name: 'nsign', role: 'Remote signer: holds the key, answers NIP-46', page: true },
+	{ name: 'ntune', role: 'Internet radio and podcast player', page: true }
 ];
 
 // The name is n + a suffix, like every app in the suite. Home is the first
-// turn, then each app in order — ten turns for the ten cubes of the N, which
-// are numbered the same way. A turn whose app has a page carries its address.
+// turn, then each app in order. The N has ten cubes and there are ten apps, so
+// each cube is an app: cube c is apps[c], which is turns[c + 1]. Home has no
+// cube — it is the name itself, and the nfunc link in every page's header.
+// A turn whose app has a page carries its address.
 export const turns: { suffix: string; line: string; href?: string }[] = [
 	{ suffix: 'func', line: 'Own your catalogue.' },
 	...apps.map((app) => ({

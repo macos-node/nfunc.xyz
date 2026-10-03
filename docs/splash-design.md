@@ -348,3 +348,17 @@ reader, "The stack", "How Nostr does it". Its copy is a first draft.
 
 To judge by watching: the move between sizes; the footer along the bottom of
 the front page; whether the small slab earns its place in the header.
+
+## Ten apps, ten cubes
+
+> 2026-10-03.
+
+ntune — the internet radio and podcast player, from the radio-scan repo — is
+the tenth app, with a page of its own. The N has ten cubes, so every cube is
+now an app (cube *c* is `apps[c]`), in the order of `src/lib/apps.ts`.
+
+Home is no longer a cube. `nfunc` is still the first turn of the name on the
+front page, and while it shows no cube is lit; the way home from any page is
+the `nfunc` link in the header (and a click on a gap of the small slab, or the
+space around it). Earlier sections that speak of "home and the nine apps"
+describe the arrangement before this.

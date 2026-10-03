@@ -3,16 +3,16 @@
 	import { goto, onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import Blocks from '$lib/Blocks.svelte';
-	import { apps, turns } from '$lib/apps';
+	import { apps } from '$lib/apps';
 	import { slab } from '$lib/slab.svelte';
 	let { children } = $props();
 
 	// One slab for the whole site. It is made here, once, and stays while the
 	// pages change: large on the front page, small in the header everywhere
-	// else. Each of the N's ten cubes is a turn — home, then the nine apps.
+	// else. Each of the N's ten cubes is an app; home is the name, not a cube.
 	const front = $derived(page.url.pathname === '/');
-	// The cube of the page being read; home's when the page is not an app's.
-	const here = $derived(Math.max(0, turns.findIndex((t) => t.href === page.url.pathname)));
+	// The cube of the page being read; none when the page is not an app's.
+	const here = $derived(apps.findIndex((a) => a.page && `/${a.name}` === page.url.pathname));
 	let peek = $state(-1); // small slab: the cube under the pointer
 
 	const hover = (n: number) => {
@@ -23,9 +23,8 @@
 		if (front) return slab.onselect?.(n);
 		// A finger cannot pick out a cube this small: the whole slab leads home.
 		if (window.matchMedia('(pointer: coarse)').matches) return goto('/');
-		const href = turns[n]?.href;
-		if (href) goto(href);
-		else if (n <= 0) goto('/'); // home's cube, a gap, or the space around
+		if (n < 0) return goto('/'); // a gap, or the space around
+		if (apps[n]?.page) goto(`/${apps[n].name}`);
 	};
 
 	// Moving between pages cross-fades where the browser can do it (the View
@@ -57,7 +56,7 @@
 			<nav aria-label="Site"><a href="/">nfunc</a> <span aria-hidden="true">/</span> <a href="/apps">apps</a></nav>
 			<!-- What the cube under the pointer is. Only a hint: the links are in the footer. -->
 			<span class="peek" class:on={peek >= 0} aria-hidden="true">
-				{#if peek >= 0}n{turns[peek].suffix}{#if peek > 0 && !turns[peek].href}<i>to come</i>{/if}{/if}
+				{#if peek >= 0 && apps[peek]}{apps[peek].name}{#if !apps[peek].page}<i>to come</i>{/if}{/if}
 			</span>
 		</header>
 	{/if}

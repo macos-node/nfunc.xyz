@@ -2,6 +2,7 @@
 // `own` are the suite's own conventions — not Nostr standards — described in
 // ndisc's README or SUITE.md; every other kind belongs to a NIP.
 const NDISC = 'https://github.com/xjmzx/ndisc';
+const AIRPLAY = 'https://github.com/macos-node/radio-scan/blob/main/schema/airplay-design-2026-07-28.md';
 const nipDoc = (n: string) => `https://github.com/nostr-protocol/nips/blob/master/${n}.md`;
 
 export const kinds: Record<number, { what: string; href: string; own?: boolean }> = {
@@ -19,7 +20,9 @@ export const kinds: Record<number, { what: string; href: string; own?: boolean }
 	30000: { what: 'a people set: who may contribute (NIP-51)', href: nipDoc('51') },
 	31237: { what: 'a release — the suite’s own convention', href: `${NDISC}#nostr-schema-experimental--kind31237`, own: true },
 	31238: { what: 'the label library — the suite’s own convention', href: `${NDISC}#companion-event-kinds`, own: true },
-	31239: { what: 'a feed note — the suite’s own convention', href: `${NDISC}#companion-event-kinds`, own: true }
+	31239: { what: 'a feed note — the suite’s own convention', href: `${NDISC}#companion-event-kinds`, own: true },
+	31241: { what: 'a station you follow — the suite’s own convention', href: AIRPLAY, own: true },
+	31242: { what: 'a podcast or show you follow — the suite’s own convention', href: AIRPLAY, own: true }
 };
 
 export const nips: Record<string, string> = {

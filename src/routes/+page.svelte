@@ -13,16 +13,16 @@
 	let swapping = $state(false); // mid-fade: the old text is on its way out
 
 	// The slab and the name are one control. The N has ten cubes and there are
-	// ten turns — home and nine apps — so each cube is a turn, in stroke order.
-	// The cube of the turn on the page is lit; pointing at a cube brings its
-	// turn to the page; a click or tap holds it there for a while, and a click
-	// on the cube already showing opens its page, if it has one. Clicking
-	// anywhere else on the slab moves on to the next.
+	// ten apps, so each cube is an app, in stroke order: cube c is turn c + 1.
+	// Home — nfunc — has no cube; while it shows, none is lit. The cube of the
+	// app on the page is lit; pointing at a cube brings its app to the page; a
+	// click or tap holds it there for a while, and a click on the cube already
+	// showing opens its page. Clicking anywhere else on the slab moves on.
 	//
 	// The slab itself belongs to the layout (it stays while pages change); this
 	// page tells it which cube is current and hears about the pointer.
 	$effect(() => {
-		slab.active = shown;
+		slab.active = shown - 1;
 	});
 	let overSlab = false; // the pointer is on a cube
 	let overWords = false;
@@ -42,14 +42,15 @@
 	};
 	const hover = (n: number) => {
 		overSlab = n >= 0;
-		if (n >= 0 && n < turns.length) go(n);
+		if (n >= 0 && n + 1 < turns.length) go(n + 1);
 	};
 	const select = (n: number) => {
 		// With a mouse the cube under the pointer is already showing, so one
 		// click opens it; with a finger the first tap shows, the second opens.
-		if (n === shown && !swapping && turns[n]?.href) return goto(turns[n].href!);
+		const turn = n + 1; // cube → turn; a gap or empty space is -1 → 0, never a cube's
+		if (n >= 0 && turn === shown && !swapping && turns[turn]?.href) return goto(turns[turn].href!);
 		heldUntil = performance.now() + 7000;
-		go(n >= 0 && n < turns.length ? n : (shown + 1) % turns.length);
+		go(n >= 0 && turn < turns.length ? turn : (shown + 1) % turns.length);
 	};
 
 	onMount(() => {
