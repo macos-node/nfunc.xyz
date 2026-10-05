@@ -169,6 +169,6 @@
 	<h2>glmps, the companion site</h2>
 	<p>
 		A public, read-only view of a published discography, in a browser:
-		<a href="https://glmps.upleb.uk">glmps.upleb.uk</a> and <a href="https://glmps.fizx.uk">glmps.fizx.uk</a>.
+		<a href="https://glmps.nfunc.xyz">glmps.nfunc.xyz</a>.
 	</p>
 </AppPage>
