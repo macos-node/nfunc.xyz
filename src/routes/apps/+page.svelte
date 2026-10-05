@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { apps } from '$lib/apps';
+	import { apps, sites } from '$lib/apps';
 </script>
 
 <svelte:head>
@@ -16,6 +16,16 @@
 		<li>
 			{#if app.page}<a href="/{app.name}">{app.name}</a>{:else}<b>{app.name}</b>{/if}
 			<span>{app.role}</span>
+		</li>
+	{/each}
+</ul>
+
+<h2>On the web</h2>
+<ul class="apps">
+	{#each sites as site}
+		<li>
+			<a href="https://{site.name}.nfunc.xyz">{site.name}</a>
+			<span>{site.role}</span>
 		</li>
 	{/each}
 </ul>

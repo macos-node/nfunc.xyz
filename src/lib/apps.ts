@@ -14,6 +14,14 @@ export const apps: { name: string; role: string; page?: boolean }[] = [
 	{ name: 'ntune', role: 'Internet radio and podcast player', page: true }
 ];
 
+// The sites that run in a browser, each at <name>.nfunc.xyz. They are not
+// apps of the suite — no cube, no page here — so they are listed apart.
+export const sites: { name: string; role: string }[] = [
+	{ name: 'glmps', role: 'A published discography, to browse and react to' },
+	{ name: 'npub', role: 'Profile lookup: a key’s profile and latest notes' },
+	{ name: 'pls', role: 'The relay’s pulse: what it holds and what arrives' }
+];
+
 // The name is n + a suffix, like every app in the suite. Home is the first
 // turn, then each app in order. The N has ten cubes and there are ten apps, so
 // each cube is an app: cube c is apps[c], which is turns[c + 1]. Home has no
