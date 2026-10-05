@@ -3,6 +3,7 @@
 // ndisc's README or SUITE.md; every other kind belongs to a NIP.
 const NDISC = 'https://github.com/xjmzx/ndisc';
 const AIRPLAY = 'https://github.com/macos-node/radio-scan/blob/main/schema/airplay-design-2026-07-28.md';
+const BLOSSOM = 'https://github.com/hzrd149/blossom/blob/master/buds';
 const nipDoc = (n: string) => `https://github.com/nostr-protocol/nips/blob/master/${n}.md`;
 
 export const kinds: Record<number, { what: string; href: string; own?: boolean }> = {
@@ -15,6 +16,8 @@ export const kinds: Record<number, { what: string; href: string; own?: boolean }
 	1059: { what: 'a gift wrap: the seal, sealed again by a throwaway key (NIP-59)', href: nipDoc('59') },
 	4133: { what: 'an approval request or answer — the suite’s own convention', href: `${NDISC}/blob/main/SUITE.md#the-approval-channel--approval-v1-frozen`, own: true },
 	24133: { what: 'a remote-signing request or reply (NIP-46)', href: nipDoc('46') },
+	24242: { what: 'permission for one upload to a Blossom server (BUD-01)', href: `${BLOSSOM}/01.md` },
+	10063: { what: 'your list of Blossom servers (BUD-03)', href: `${BLOSSOM}/03.md` },
 	1063: { what: 'a file and its metadata (NIP-94)', href: nipDoc('94') },
 	4550: { what: 'an approval of a feed note (NIP-72)', href: nipDoc('72') },
 	30000: { what: 'a people set: who may contribute (NIP-51)', href: nipDoc('51') },

@@ -6,7 +6,7 @@
 	import NostrRefs from '$lib/NostrRefs.svelte';
 
 	// One place for the things that change with a release.
-	const version = '0.4.1';
+	const version = '0.5.2';
 	const repo = 'https://github.com/xjmzx/ndisc';
 </script>
 
@@ -59,8 +59,8 @@
 			</dd>
 		</div>
 		<div>
-			<dt>Cover art <Kinds list={[31237]} /></dt>
-			<dd>Shows the cover from an https address, and falls back to the file in the album folder. It can pull artwork out of the audio files themselves.</dd>
+			<dt>Cover art <Kinds list={[31237, 24242, 10063]} /></dt>
+			<dd>Shows the cover from an https address, and falls back to the file in the album folder. It can pull artwork out of the audio files themselves, and put a cover on your own Blossom server so the release points there.</dd>
 		</div>
 		<div>
 			<dt>Labels <Kinds list={[31238]} /></dt>
@@ -124,7 +124,7 @@
 		</p>
 
 		<NostrRefs
-			kinds={[31237, 31238, 31239, 0, 5, 7, 4550, 30000]}
+			kinds={[31237, 31238, 31239, 0, 5, 7, 4550, 30000, 24242, 10063]}
 			nips={[
 				'01',
 				{ n: '09', what: 'deletion requests — Unpublish' },
