@@ -2,7 +2,7 @@
 # deploy.sh — build and push nfunc.xyz
 set -e
 cd "$(dirname "${BASH_SOURCE[0]}")"
-SERVER="nfunc"   # ~/.ssh/config alias for the server
+SERVER="nfunc.xyz"   # a Host alias in ~/.ssh/config, the same name on every machine
 
 npm ci --silent
 rm -rf .svelte-kit build
