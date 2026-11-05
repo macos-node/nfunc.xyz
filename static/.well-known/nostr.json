@@ -1,13 +1,17 @@
 {
   "names": {
     "_": "72c7231eed69418e8b850cc4a4a9dea4536d5c667b88cfdad5d41d6625e53c17",
-    "admin": "46a83627be8bbaa0c88037da9224d66e13443158418f57ae4154cac6354b0e78"
+    "admin": "46a83627be8bbaa0c88037da9224d66e13443158418f57ae4154cac6354b0e78",
+    "nurture": "916c25cf07a65b36fa7805f31f750fcb27f5cce2d39a7ac92035570aa2672a2d"
   },
   "relays": {
     "72c7231eed69418e8b850cc4a4a9dea4536d5c667b88cfdad5d41d6625e53c17": [
       "wss://relay.nfunc.xyz"
     ],
     "46a83627be8bbaa0c88037da9224d66e13443158418f57ae4154cac6354b0e78": [
+      "wss://relay.nfunc.xyz"
+    ],
+    "916c25cf07a65b36fa7805f31f750fcb27f5cce2d39a7ac92035570aa2672a2d": [
       "wss://relay.nfunc.xyz"
     ]
   }
